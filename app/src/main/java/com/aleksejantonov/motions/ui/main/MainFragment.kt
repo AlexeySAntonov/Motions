@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aleksejantonov.motions.R
+import com.aleksejantonov.motions.util.navigation.Screens.FIFTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FIRST_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FOURTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SECOND_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.THIRD_SCENE
+import kotlinx.android.synthetic.main.fragment_main.fifthScene
 import kotlinx.android.synthetic.main.fragment_main.firstScene
 import kotlinx.android.synthetic.main.fragment_main.fourthScene
 import kotlinx.android.synthetic.main.fragment_main.secondScene
@@ -33,6 +35,7 @@ class MainFragment : Fragment(), MvpView {
     secondScene.setOnClickListener { presenter.goTo(SECOND_SCENE) }
     thirdScene.setOnClickListener { presenter.goTo(THIRD_SCENE) }
     fourthScene.setOnClickListener { presenter.goTo(FOURTH_SCENE) }
+    fifthScene.setOnClickListener { presenter.goTo(FIFTH_SCENE) }
   }
 
   override fun onDestroyView() {
