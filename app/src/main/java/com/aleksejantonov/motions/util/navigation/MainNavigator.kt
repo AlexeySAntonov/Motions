@@ -8,6 +8,7 @@ import com.aleksejantonov.motions.ui.fourthscene.FourthSceneFragment
 import com.aleksejantonov.motions.ui.main.MainActivity
 import com.aleksejantonov.motions.ui.main.MainFragment
 import com.aleksejantonov.motions.ui.secondscene.SecondSceneFragment
+import com.aleksejantonov.motions.ui.sevenscene.SevenSceneFragment
 import com.aleksejantonov.motions.ui.sixscene.SixSceneFragment
 import com.aleksejantonov.motions.ui.thirdscene.ThirdSceneFragment
 import com.aleksejantonov.motions.util.navigation.MainNavigator.Commands.FORWARD
@@ -17,6 +18,7 @@ import com.aleksejantonov.motions.util.navigation.Screens.FIRST_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FOURTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.MAIN
 import com.aleksejantonov.motions.util.navigation.Screens.SECOND_SCENE
+import com.aleksejantonov.motions.util.navigation.Screens.SEVEN_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SIX_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.THIRD_SCENE
 
@@ -57,6 +59,7 @@ class MainNavigator(activity: MainActivity) {
       FOURTH_SCENE -> FourthSceneFragment.newInstance()
       FIFTH_SCENE  -> FifthSceneFragment.newInstance()
       SIX_SCENE    -> SixSceneFragment.newInstance()
+      SEVEN_SCENE  -> SevenSceneFragment.newInstance()
     }
   }
 

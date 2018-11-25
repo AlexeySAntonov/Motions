@@ -7,5 +7,6 @@ enum class Screens {
   THIRD_SCENE,
   FOURTH_SCENE,
   FIFTH_SCENE,
-  SIX_SCENE
+  SIX_SCENE,
+  SEVEN_SCENE
 }

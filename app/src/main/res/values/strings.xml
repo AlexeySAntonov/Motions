@@ -6,4 +6,5 @@
   <string name="image_filter_one_scene">image filter I</string>
   <string name="image_filter_two_scene">image filter II</string>
   <string name="keyset_one_scene">keyset I</string>
+  <string name="keyset_two_scene">keyset II</string>
 </resources>
