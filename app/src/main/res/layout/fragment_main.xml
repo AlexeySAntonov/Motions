@@ -1,53 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <Button
-      android:id="@+id/firstScene"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/elevation_scene"
-      app:layout_constraintBottom_toTopOf="@+id/secondScene"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"/>
-  <Button
-      android:id="@+id/secondScene"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/alpha_scene"
-      app:layout_constraintBottom_toTopOf="@+id/thirdScene"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/firstScene"/>
-  <Button
-      android:id="@+id/thirdScene"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/color_scene"
-      app:layout_constraintBottom_toTopOf="@+id/fourthScene"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/secondScene"/>
-  <Button
-      android:id="@+id/fourthScene"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/image_filter_one_scene"
-      app:layout_constraintBottom_toTopOf="@+id/fifthScene"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/thirdScene"/>
-  <Button
-      android:id="@+id/fifthScene"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/image_filter_two_scene"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/fourthScene"/>
-</android.support.constraint.ConstraintLayout>
+  <android.support.constraint.ConstraintLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/firstScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/elevation_scene"
+        app:layout_constraintBottom_toTopOf="@+id/secondScene"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <Button
+        android:id="@+id/secondScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/alpha_scene"
+        app:layout_constraintBottom_toTopOf="@+id/thirdScene"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/firstScene"/>
+    <Button
+        android:id="@+id/thirdScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/color_scene"
+        app:layout_constraintBottom_toTopOf="@+id/fourthScene"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/secondScene"/>
+    <Button
+        android:id="@+id/fourthScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/image_filter_one_scene"
+        app:layout_constraintBottom_toTopOf="@+id/fifthScene"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/thirdScene"/>
+    <Button
+        android:id="@+id/fifthScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/image_filter_two_scene"
+        app:layout_constraintBottom_toTopOf="@+id/sixScene"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fourthScene"/>
+    <Button
+        android:id="@+id/sixScene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyset_one_scene"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fifthScene"/>
+  </android.support.constraint.ConstraintLayout>
+</ScrollView>
