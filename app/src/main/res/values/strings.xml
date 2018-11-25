@@ -1,3 +1,8 @@
 <resources>
   <string name="app_name">Motions</string>
+  <string name="elevation_scene">elevation</string>
+  <string name="alpha_scene">alpha</string>
+  <string name="color_scene">color</string>
+  <string name="image_filter_one_scene">image filter I</string>
+  <string name="image_filter_two_scene">image filter II</string>
 </resources>

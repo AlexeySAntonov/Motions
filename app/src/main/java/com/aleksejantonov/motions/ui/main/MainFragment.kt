@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.aleksejantonov.motions.R
 import com.aleksejantonov.motions.util.navigation.Screens.FIRST_SCENE
+import com.aleksejantonov.motions.util.navigation.Screens.FOURTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SECOND_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.THIRD_SCENE
 import kotlinx.android.synthetic.main.fragment_main.firstScene
+import kotlinx.android.synthetic.main.fragment_main.fourthScene
 import kotlinx.android.synthetic.main.fragment_main.secondScene
 import kotlinx.android.synthetic.main.fragment_main.thirdScene
 
@@ -30,6 +32,7 @@ class MainFragment : Fragment(), MvpView {
     firstScene.setOnClickListener { presenter.goTo(FIRST_SCENE) }
     secondScene.setOnClickListener { presenter.goTo(SECOND_SCENE) }
     thirdScene.setOnClickListener { presenter.goTo(THIRD_SCENE) }
+    fourthScene.setOnClickListener { presenter.goTo(FOURTH_SCENE) }
   }
 
   override fun onDestroyView() {

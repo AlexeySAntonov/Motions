@@ -9,7 +9,7 @@
       android:id="@+id/firstScene"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Scene 1"
+      android:text="@string/elevation_scene"
       app:layout_constraintBottom_toTopOf="@+id/secondScene"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +18,7 @@
       android:id="@+id/secondScene"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Scene 2"
+      android:text="@string/alpha_scene"
       app:layout_constraintBottom_toTopOf="@+id/thirdScene"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -27,9 +27,27 @@
       android:id="@+id/thirdScene"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Scene 3"
-      app:layout_constraintBottom_toBottomOf="parent"
+      android:text="@string/color_scene"
+      app:layout_constraintBottom_toTopOf="@+id/fourthScene"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/secondScene"/>
+  <Button
+      android:id="@+id/fourthScene"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/image_filter_one_scene"
+      app:layout_constraintBottom_toTopOf="@+id/fifthScene"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/thirdScene"/>
+  <Button
+      android:id="@+id/fifthScene"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/image_filter_two_scene"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/fourthScene"/>
 </android.support.constraint.ConstraintLayout>
