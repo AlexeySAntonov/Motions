@@ -2,6 +2,7 @@ package com.aleksejantonov.motions.util.navigation
 
 import android.support.v4.app.Fragment
 import com.aleksejantonov.motions.R
+import com.aleksejantonov.motions.ui.eightscene.EightSceneFragment
 import com.aleksejantonov.motions.ui.fifthscene.FifthSceneFragment
 import com.aleksejantonov.motions.ui.firstscene.FirstSceneFragment
 import com.aleksejantonov.motions.ui.fourthscene.FourthSceneFragment
@@ -13,6 +14,7 @@ import com.aleksejantonov.motions.ui.sixscene.SixSceneFragment
 import com.aleksejantonov.motions.ui.thirdscene.ThirdSceneFragment
 import com.aleksejantonov.motions.util.navigation.MainNavigator.Commands.FORWARD
 import com.aleksejantonov.motions.util.navigation.MainNavigator.Commands.REPLACE
+import com.aleksejantonov.motions.util.navigation.Screens.EIGHT_SCREEN
 import com.aleksejantonov.motions.util.navigation.Screens.FIFTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FIRST_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FOURTH_SCENE
@@ -60,6 +62,7 @@ class MainNavigator(activity: MainActivity) {
       FIFTH_SCENE  -> FifthSceneFragment.newInstance()
       SIX_SCENE    -> SixSceneFragment.newInstance()
       SEVEN_SCENE  -> SevenSceneFragment.newInstance()
+      EIGHT_SCREEN -> EightSceneFragment.newInstance()
     }
   }
 

@@ -8,5 +8,6 @@ enum class Screens {
   FOURTH_SCENE,
   FIFTH_SCENE,
   SIX_SCENE,
-  SEVEN_SCENE
+  SEVEN_SCENE,
+  EIGHT_SCREEN
 }
