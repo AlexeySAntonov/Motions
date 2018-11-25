@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.motion.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motionLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/scene_04"
+    tools:showPaths="true">
+
+  <android.support.constraint.utils.ImageFilterView
+      android:id="@+id/image"
+      android:layout_width="64dp"
+      android:layout_height="64dp"
+      android:scaleType="centerCrop"
+      app:altSrc="@drawable/cat_two"
+      app:srcCompat="@drawable/cat_one"/>
+
+</android.support.constraint.motion.MotionLayout>
