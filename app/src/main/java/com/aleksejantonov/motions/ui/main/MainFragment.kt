@@ -14,6 +14,7 @@ import com.aleksejantonov.motions.util.navigation.Screens.NINE_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SECOND_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SEVEN_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SIX_SCENE
+import com.aleksejantonov.motions.util.navigation.Screens.TEN_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.THIRD_SCENE
 import kotlinx.android.synthetic.main.fragment_main.eightScene
 import kotlinx.android.synthetic.main.fragment_main.fifthScene
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_main.nineScene
 import kotlinx.android.synthetic.main.fragment_main.secondScene
 import kotlinx.android.synthetic.main.fragment_main.sevenScene
 import kotlinx.android.synthetic.main.fragment_main.sixScene
+import kotlinx.android.synthetic.main.fragment_main.tenScene
 import kotlinx.android.synthetic.main.fragment_main.thirdScene
 
 class MainFragment : Fragment(), MvpView {
@@ -48,6 +50,7 @@ class MainFragment : Fragment(), MvpView {
     sevenScene.setOnClickListener { presenter.goTo(SEVEN_SCENE) }
     eightScene.setOnClickListener { presenter.goTo(EIGHT_SCREEN) }
     nineScene.setOnClickListener { presenter.goTo(NINE_SCENE) }
+    tenScene.setOnClickListener { presenter.goTo(TEN_SCENE) }
   }
 
   override fun onDestroyView() {

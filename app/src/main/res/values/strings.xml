@@ -11,4 +11,5 @@
   <string name="collapsible_header">collapsible header</string>
   <string name="st_petersburg">St. Petersburg</string>
   <string name="drawer">drawer</string>
+  <string name="viewpager">viewpager</string>
 </resources>
