@@ -12,4 +12,5 @@
   <string name="st_petersburg">St. Petersburg</string>
   <string name="drawer">drawer</string>
   <string name="viewpager">viewpager</string>
+  <string name="bottom_bar">bottom bar</string>
 </resources>

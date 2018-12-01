@@ -11,5 +11,6 @@ enum class Screens {
   SEVEN_SCENE,
   EIGHT_SCREEN,
   NINE_SCENE,
-  TEN_SCENE
+  TEN_SCENE,
+  BOTTOM_BAR
 }

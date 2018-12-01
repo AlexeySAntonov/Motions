@@ -1,0 +1,13 @@
+<com.aleksejantonov.motions.ui.ninescene.DrawerContent
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/scene_10"
+    app:progress="100"
+    tools:showIn="@layout/fragment_nine_scene">
+
+  <include layout="@layout/fragment_eight_scene"/>
+
+</com.aleksejantonov.motions.ui.ninescene.DrawerContent>

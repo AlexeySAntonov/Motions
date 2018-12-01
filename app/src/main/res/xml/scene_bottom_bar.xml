@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+  <Transition
+      motion:constraintSetEnd="@+id/end"
+      motion:constraintSetStart="@+id/start"
+      motion:duration="1000">
+    <OnSwipe
+        motion:dragDirection="dragRight"
+        motion:touchAnchorId="@+id/bar"
+        motion:touchAnchorSide="right"/>
+  </Transition>
+
+  <ConstraintSet android:id="@+id/start">
+    <Constraint
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        motion:backgroundTint="@color/colorPrimary"
+        motion:fabAlignmentMode="center"
+        motion:fabCradleMargin="8dp"
+        motion:fabCradleRoundedCornerRadius="8dp">
+      <CustomAttribute
+          motion:attributeName="layout_height"
+          motion:customFloatValue="40"/>
+    </Constraint>
+  </ConstraintSet>
+
+  <ConstraintSet android:id="@+id/end">
+    <Constraint
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        motion:backgroundTint="@color/colorPrimary"
+        motion:fabAlignmentMode="end"
+        motion:fabCradleMargin="8dp"
+        motion:fabCradleRoundedCornerRadius="8dp">
+      <CustomAttribute
+          motion:attributeName="layout_height"
+          motion:customFloatValue="80"/>
+    </Constraint>
+  </ConstraintSet>
+
+</MotionScene>
