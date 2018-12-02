@@ -13,6 +13,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.ClassLoaderCreator
 import android.os.Parcelable.Creator
+import android.support.annotation.DrawableRes
 import android.support.annotation.Px
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -75,6 +76,10 @@ class NiceBar @JvmOverloads constructor(
   private var rightImage: ImageView? = null
   private var centerImage: ImageView? = null
 
+  private var leftImageRes: Int? = null
+  private var rightImageRes: Int? = null
+  private var centerImageRes: Int? = null
+
   private var backgroundTint: ColorStateList?
     get() = materialShapeDrawable.tintList
     set(backgroundTint) = DrawableCompat.setTintList(materialShapeDrawable, backgroundTint)
@@ -136,6 +141,9 @@ class NiceBar @JvmOverloads constructor(
 
     val a = context.theme.obtainStyledAttributes(attrs, R.styleable.NiceBar, 0, 0)
     val backgroundTint = getColorStateList(context, a, R.styleable.NiceBar_backgroundTint)
+    leftImageRes = a.getResourceId(R.styleable.NiceBar_leftImageRes, 0)
+    rightImageRes = a.getResourceId(R.styleable.NiceBar_rightImageRes, 0)
+    centerImageRes = a.getResourceId(R.styleable.NiceBar_centerImageRes, 0)
     val fabCradleMargin = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleMargin, 0).toFloat()
     val fabCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleRoundedCornerRadius, 0).toFloat()
     val fabVerticalOffset = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleVerticalOffset, 0).toFloat()
@@ -167,24 +175,24 @@ class NiceBar @JvmOverloads constructor(
     materialShapeDrawable.paintStyle = Style.FILL
     DrawableCompat.setTintList(materialShapeDrawable, backgroundTint)
     ViewCompat.setBackground(this, materialShapeDrawable)
-    if (barIconsMode == BAR_ICONS_MODE_FULL) setupIcons(barIconsSideMargin)
+    if (barIconsMode == BAR_ICONS_MODE_FULL) setupIcons(barIconsSideMargin, leftImageRes, rightImageRes, centerImageRes)
   }
 
-  private fun setupIcons(sideMargin: Int) {
+  private fun setupIcons(sideMargin: Int, @DrawableRes leftImageRes: Int?, @DrawableRes rightImageRes: Int?, @DrawableRes centerImageRes: Int?) {
     val set = ConstraintSet()
     leftImage = ImageView(context).apply {
       id = LEFT_IMAGE_ID
-      setImageResource(R.drawable.ic_menu_white_24dp)
+      if (leftImageRes != 0 && leftImageRes != null) setImageResource(leftImageRes)
       setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     rightImage = ImageView(context).apply {
       id = RIGHT_IMAGE_ID
-      setImageResource(R.drawable.ic_menu_white_24dp)
+      if (rightImageRes != 0 && rightImageRes != null) setImageResource(rightImageRes)
       setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     centerImage = ImageView(context).apply {
       id = CENTER_IMAGE_ID
-      setImageResource(R.drawable.ic_menu_white_24dp)
+      if (centerImageRes != 0 && centerImageRes != null) setImageResource(centerImageRes)
       setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     addView(leftImage)
@@ -241,6 +249,14 @@ class NiceBar @JvmOverloads constructor(
     }
   }
 
+  fun setImageRes(fabAlignmentMode: Int, @DrawableRes imageRes: Int) {
+    when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START  -> leftImage?.setImageResource(imageRes)
+      FAB_ALIGNMENT_MODE_END    -> rightImage?.setImageResource(imageRes)
+      FAB_ALIGNMENT_MODE_CENTER -> centerImage?.setImageResource(imageRes)
+    }
+  }
+
   private fun dpToPx(dp: Float): Int {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).toInt()
   }
@@ -249,12 +265,12 @@ class NiceBar @JvmOverloads constructor(
     return fabAlignmentMode
   }
 
-  fun setFabAlignmentMode(@FabAlignmentMode fabAlignmentMode: Int) {
+  private fun setFabAlignmentMode(@FabAlignmentMode fabAlignmentMode: Int) {
     maybeAnimateModeChange(fabAlignmentMode)
     this.fabAlignmentMode = fabAlignmentMode
   }
 
-  fun setFabDiameter(@Px diameter: Int) {
+  private fun setFabDiameter(@Px diameter: Int) {
     if (diameter.toFloat() != topEdgeTreatment.fabDiameter) {
       topEdgeTreatment.fabDiameter = diameter.toFloat()
       materialShapeDrawable.invalidateSelf()

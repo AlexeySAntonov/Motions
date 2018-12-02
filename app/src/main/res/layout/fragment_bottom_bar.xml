@@ -19,9 +19,12 @@
       app:barIconsSideMargin="60dp"
       app:barTopLeftRadius="8dp"
       app:barTopRightRadius="8dp"
+      app:centerImageRes="@drawable/ic_mic_white_24dp"
       app:fabAlignmentMode="center"
       app:fabCradleMargin="8dp"
-      app:fabCradleRoundedCornerRadius="8dp"/>
+      app:fabCradleRoundedCornerRadius="8dp"
+      app:leftImageRes="@drawable/ic_menu_white_24dp"
+      app:rightImageRes="@drawable/ic_motorcycle_white_24dp"/>
 
   <android.support.design.widget.FloatingActionButton
       android:id="@+id/fab"
