@@ -21,6 +21,6 @@ class BottomBarFragment : Fragment() {
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    fab.setOnClickListener { bar.setFabAlignmentMode(FAB_ALIGNMENT_MODE_END) }
+
   }
 }

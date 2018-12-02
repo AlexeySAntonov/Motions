@@ -13,9 +13,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.ClassLoaderCreator
 import android.os.Parcelable.Creator
-import android.support.annotation.MenuRes
 import android.support.annotation.Px
 import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintSet
 import android.support.design.R.attr
 import android.support.design.animation.AnimationUtils
 import android.support.design.behavior.HideBottomViewOnScrollBehavior
@@ -28,10 +28,10 @@ import android.support.design.widget.CoordinatorLayout.AttachedBehavior
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.AbsSavedState
 import android.support.v4.view.ViewCompat
-import android.support.v7.widget.ActionMenuView
-import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
+import android.widget.ImageView
 import com.aleksejantonov.motions.R
 import com.aleksejantonov.motions.util.getColorStateList
 import java.util.ArrayList
@@ -50,19 +50,29 @@ class NiceBar @JvmOverloads constructor(
     const val FAB_ALIGNMENT_MODE_CENTER = 0
     const val FAB_ALIGNMENT_MODE_END = 1
     const val FAB_ALIGNMENT_MODE_START = 2
+    const val BAR_ICONS_MODE_FULL = 0
+    const val BAR_ICONS_MODE_NONE = 1
+
+    var LEFT_IMAGE_ID = View.generateViewId()
+    var RIGHT_IMAGE_ID = View.generateViewId()
   }
 
   private val fabOffsetEndMode: Int
   private val fabOffsetStartMode: Int
+  private var fabAlignmentMode: Int = FAB_ALIGNMENT_MODE_CENTER
+  private var hideOnScroll: Boolean = false
+  private var fabAttached: Boolean = false
+
   private val materialShapeDrawable: MaterialShapeDrawable
   private val topEdgeTreatment: BottomAppBarTopEdgeTreatment
+
   private var attachAnimator: Animator? = null
   private var modeAnimator: Animator? = null
-  private var menuAnimator: Animator? = null
-  private var fabAlignmentMode: Int = FAB_ALIGNMENT_MODE_CENTER
-  var hideOnScroll: Boolean = false
-  private var fabAttached: Boolean = false
+  private var visibilityAnimator: Animator? = null
   private var fabAnimationListener: AnimatorListenerAdapter
+
+  private var leftImage: ImageView? = null
+  private var rightImage: ImageView? = null
 
   private var backgroundTint: ColorStateList?
     get() = materialShapeDrawable.tintList
@@ -109,27 +119,17 @@ class NiceBar @JvmOverloads constructor(
   private val fabTranslationX: Float
     get() = getFabTranslationX(fabAlignmentMode).toFloat()
 
-  private val actionMenuView: ActionMenuView?
-    get() {
-      for (i in 0 until childCount) {
-        val view = getChildAt(i)
-        if (view is ActionMenuView) {
-          return view
-        }
-      }
-      return null
-    }
-
   private val isAnimationRunning: Boolean
     get() =
-      attachAnimator != null && attachAnimator!!.isRunning || menuAnimator != null && menuAnimator!!.isRunning || modeAnimator != null && modeAnimator!!.isRunning
+      attachAnimator != null && attachAnimator!!.isRunning
+          || modeAnimator != null && modeAnimator!!.isRunning
+          || visibilityAnimator != null && visibilityAnimator!!.isRunning
 
   init {
     fabAttached = true
     fabAnimationListener = object : AnimatorListenerAdapter() {
       override fun onAnimationStart(animation: Animator) {
         maybeAnimateAttachChange(fabAttached)
-        maybeAnimateMenuView(fabAlignmentMode, fabAttached)
       }
     }
 
@@ -143,6 +143,8 @@ class NiceBar @JvmOverloads constructor(
     val barTopRightCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barTopRightRadius, 0).toFloat()
     val barBottomLeftCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barBottomLeftRadius, 0).toFloat()
     val barBottomRightCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barBottomRightRadius, 0).toFloat()
+    val barIconsSideMargin = a.getDimensionPixelOffset(R.styleable.NiceBar_barIconsSideMargin, 0).toFloat()
+    val barIconsMode = a.getInt(R.styleable.NiceBar_barIconsMode, 0)
     fabAlignmentMode = a.getInt(R.styleable.NiceBar_fabAlignmentMode, 0)
     hideOnScroll = a.getBoolean(R.styleable.NiceBar_hideOnScroll, false)
     a.recycle()
@@ -165,6 +167,44 @@ class NiceBar @JvmOverloads constructor(
     materialShapeDrawable.paintStyle = Style.FILL
     DrawableCompat.setTintList(materialShapeDrawable, backgroundTint)
     ViewCompat.setBackground(this, materialShapeDrawable)
+    if (barIconsMode == BAR_ICONS_MODE_FULL) setupIcons(barIconsSideMargin)
+  }
+
+  private fun setupIcons(sideMargin: Float) {
+    val set = ConstraintSet()
+    leftImage = ImageView(context).apply {
+      id = LEFT_IMAGE_ID
+      setImageResource(R.drawable.ic_menu_white_24dp)
+    }
+    rightImage = ImageView(context).apply {
+      id = RIGHT_IMAGE_ID
+      setImageResource(R.drawable.ic_menu_white_24dp)
+    }
+    addView(leftImage)
+    addView(rightImage)
+    set.clone(this)
+    set.connect(LEFT_IMAGE_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(LEFT_IMAGE_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(LEFT_IMAGE_ID, ConstraintSet.START, id, ConstraintSet.START, dpToPx(sideMargin))
+    set.connect(RIGHT_IMAGE_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(RIGHT_IMAGE_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(RIGHT_IMAGE_ID, ConstraintSet.END, id, ConstraintSet.END, dpToPx(sideMargin))
+    set.applyTo(this)
+
+    val typedValue = TypedValue()
+    context.theme.resolveAttribute(R.attr.selectableItemBackgroundBorderless, typedValue, true)
+    leftImage?.apply {
+      setOnClickListener { setFabAlignmentMode(FAB_ALIGNMENT_MODE_START) }
+      setBackgroundResource(typedValue.resourceId)
+    }
+    rightImage?.apply {
+      setOnClickListener { setFabAlignmentMode(FAB_ALIGNMENT_MODE_END) }
+      setBackgroundResource(typedValue.resourceId)
+    }
+  }
+
+  private fun dpToPx(dp: Float): Int {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).toInt()
   }
 
   fun getFabAlignmentMode(): Int {
@@ -173,14 +213,8 @@ class NiceBar @JvmOverloads constructor(
 
   fun setFabAlignmentMode(@FabAlignmentMode fabAlignmentMode: Int) {
     maybeAnimateModeChange(fabAlignmentMode)
-    maybeAnimateMenuView(fabAlignmentMode, fabAttached)
     this.fabAlignmentMode = fabAlignmentMode
   }
-
-//  fun replaceMenu(@MenuRes newMenu: Int) {
-//    menu.clear()
-//    inflateMenu(newMenu)
-//  }
 
   fun setFabDiameter(@Px diameter: Int) {
     if (diameter.toFloat() != topEdgeTreatment.fabDiameter) {
@@ -189,11 +223,25 @@ class NiceBar @JvmOverloads constructor(
     }
   }
 
+  private fun maybeAnimateIconVisibilityChange(visibility: Int, view: ImageView) {
+    if (view.visibility != visibility && ViewCompat.isLaidOut(view)) {
+      visibilityAnimator?.cancel()
+
+
+
+
+      visibilityAnimator?.addListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator) {
+          visibilityAnimator = null
+        }
+      })
+      visibilityAnimator?.start()
+    }
+  }
+
   private fun maybeAnimateModeChange(@FabAlignmentMode targetMode: Int) {
     if (fabAlignmentMode != targetMode && ViewCompat.isLaidOut(this)) {
-      if (modeAnimator != null) {
-        modeAnimator!!.cancel()
-      }
+      modeAnimator?.cancel()
 
       val animators = ArrayList<Animator>()
       createCradleTranslationAnimation(targetMode, animators)
@@ -201,12 +249,12 @@ class NiceBar @JvmOverloads constructor(
       val set = AnimatorSet()
       set.playTogether(animators)
       modeAnimator = set
-      modeAnimator!!.addListener(object : AnimatorListenerAdapter() {
+      modeAnimator?.addListener(object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
-          this@NiceBar.modeAnimator = null
+          modeAnimator = null
         }
       })
-      modeAnimator!!.start()
+      modeAnimator?.start()
     }
   }
 
@@ -248,71 +296,9 @@ class NiceBar @JvmOverloads constructor(
     animators.add(animator)
   }
 
-  private fun maybeAnimateMenuView(@FabAlignmentMode mode: Int, attached: Boolean) {
-    var targetMode = mode
-    var newFabAttached = attached
-    if (ViewCompat.isLaidOut(this)) {
-      if (menuAnimator != null) {
-        menuAnimator!!.cancel()
-      }
-
-      val animators = ArrayList<Animator>()
-      if (!isVisibleFab) {
-        targetMode = 0
-        newFabAttached = false
-      }
-
-      createMenuViewTranslationAnimation(targetMode, newFabAttached, animators)
-      val set = AnimatorSet()
-      set.playTogether(animators)
-      menuAnimator = set
-      menuAnimator!!.addListener(object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator) {
-          this@NiceBar.menuAnimator = null
-        }
-      })
-      menuAnimator!!.start()
-    }
-  }
-
-  private fun createMenuViewTranslationAnimation(targetMode: Int, targetAttached: Boolean, animators: MutableList<Animator>) {
-    val actionMenuView = actionMenuView
-    if (actionMenuView != null) {
-      val fadeIn = ObjectAnimator.ofFloat(actionMenuView, "alpha", 1.0f)
-      if (!fabAttached && (!targetAttached || !isVisibleFab) || fabAlignmentMode != 1 && targetMode != 1) {
-        if (actionMenuView.alpha < 1.0f) {
-          animators.add(fadeIn)
-        }
-      } else {
-        val fadeOut = ObjectAnimator.ofFloat(actionMenuView, "alpha", 0.0f)
-        fadeOut.addListener(object : AnimatorListenerAdapter() {
-          var cancelled: Boolean = false
-
-          override fun onAnimationCancel(animation: Animator) {
-            cancelled = true
-          }
-
-          override fun onAnimationEnd(animation: Animator) {
-            if (!cancelled) {
-//              this@NiceBar.translateActionMenuView(actionMenuView, targetMode, targetAttached)
-            }
-
-          }
-        })
-        val set = AnimatorSet()
-        set.duration = 150L
-        set.playSequentially(fadeOut, fadeIn)
-        animators.add(set)
-      }
-
-    }
-  }
-
   private fun maybeAnimateAttachChange(targetAttached: Boolean) {
     if (ViewCompat.isLaidOut(this)) {
-      if (attachAnimator != null) {
-        attachAnimator!!.cancel()
-      }
+      attachAnimator?.cancel()
 
       val animators = ArrayList<Animator>()
       createCradleShapeAnimation(targetAttached && isVisibleFab, animators)
@@ -320,12 +306,12 @@ class NiceBar @JvmOverloads constructor(
       val set = AnimatorSet()
       set.playTogether(animators)
       attachAnimator = set
-      attachAnimator!!.addListener(object : AnimatorListenerAdapter() {
+      attachAnimator?.addListener(object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
           this@NiceBar.attachAnimator = null
         }
       })
-      attachAnimator!!.start()
+      attachAnimator?.start()
     }
   }
 
@@ -379,39 +365,10 @@ class NiceBar @JvmOverloads constructor(
     }
   }
 
-//  private fun translateActionMenuView(actionMenuView: ActionMenuView?, fabAlignmentMode: Int, fabAttached: Boolean) {
-//    var toolbarLeftContentEnd = 0
-//    val isRtl = ViewCompat.getLayoutDirection(this) == 1
-//
-//    var end: Int
-//    end = 0
-//    while (end < childCount) {
-//      val view = getChildAt(end)
-//      val isAlignedToStart = view.layoutParams is LayoutParams && (view.layoutParams as LayoutParams).gravity and 8388615 == 8388611
-//      if (isAlignedToStart) {
-//        toolbarLeftContentEnd = Math.max(toolbarLeftContentEnd, if (isRtl) view.left else view.right)
-//      }
-//      ++end
-//    }
-//
-//    end = if (isRtl) actionMenuView!!.right else actionMenuView!!.left
-//    val offset = toolbarLeftContentEnd - end
-//    actionMenuView.translationX = if (fabAlignmentMode == 1 && fabAttached) offset.toFloat() else 0.0f
-//  }
-
   private fun cancelAnimations() {
-    if (attachAnimator != null) {
-      attachAnimator!!.cancel()
-    }
-
-    if (menuAnimator != null) {
-      menuAnimator!!.cancel()
-    }
-
-    if (modeAnimator != null) {
-      modeAnimator!!.cancel()
-    }
-
+    attachAnimator?.cancel()
+    modeAnimator?.cancel()
+    visibilityAnimator?.cancel()
   }
 
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -428,17 +385,6 @@ class NiceBar @JvmOverloads constructor(
       fab.translationY = fabTranslationY
       fab.translationX = fabTranslationX
     }
-
-//    val actionMenuView = actionMenuView
-//    if (actionMenuView != null) {
-//      actionMenuView.alpha = 1.0f
-//      if (!isVisibleFab) {
-//        translateActionMenuView(actionMenuView, 0, false)
-//      } else {
-//        translateActionMenuView(actionMenuView, fabAlignmentMode, fabAttached)
-//      }
-//    }
-
   }
 
   private fun addFabAnimationListeners(fab: FloatingActionButton) {
@@ -451,10 +397,6 @@ class NiceBar @JvmOverloads constructor(
     fab.removeOnHideAnimationListener(fabAnimationListener)
     fab.removeOnShowAnimationListener(fabAnimationListener)
   }
-
-//  override fun setTitle(title: CharSequence) {}
-//
-//  override fun setSubtitle(subtitle: CharSequence) {}
 
   override fun getBehavior(): android.support.design.widget.CoordinatorLayout.Behavior<NiceBar> {
     return NiceBar.Behavior()
@@ -550,7 +492,6 @@ class NiceBar @JvmOverloads constructor(
         fab.clearAnimation()
         fab.animate().translationY(child.fabTranslationY).setInterpolator(AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR).duration = 225L
       }
-
     }
 
     override fun slideDown(child: NiceBar) {
@@ -562,7 +503,6 @@ class NiceBar @JvmOverloads constructor(
         fab.clearAnimation()
         fab.animate().translationY((-fab.paddingBottom).toFloat() + fabShadowPadding).setInterpolator(AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR).duration = 175L
       }
-
     }
   }
 }
