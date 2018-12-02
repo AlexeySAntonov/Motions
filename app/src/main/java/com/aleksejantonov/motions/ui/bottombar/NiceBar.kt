@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.graphics.Paint.Style
+import android.graphics.drawable.Animatable
+import android.graphics.drawable.Drawable
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.ClassLoaderCreator
@@ -26,6 +28,7 @@ import android.support.design.shape.ShapePathModel
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.CoordinatorLayout.AttachedBehavior
+import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.AbsSavedState
 import android.support.v4.view.ViewCompat
@@ -217,6 +220,7 @@ class NiceBar @JvmOverloads constructor(
       setOnClickListener {
         maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_START)
+        setFabDrawable(this.drawable)
       }
       setBackgroundResource(typedValue.resourceId)
     }
@@ -224,6 +228,7 @@ class NiceBar @JvmOverloads constructor(
       setOnClickListener {
         maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_END)
+        setFabDrawable(this.drawable)
       }
       setBackgroundResource(typedValue.resourceId)
     }
@@ -231,11 +236,18 @@ class NiceBar @JvmOverloads constructor(
       setOnClickListener {
         maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_CENTER)
+        setFabDrawable(this.drawable)
       }
       setBackgroundResource(typedValue.resourceId)
     }
 
     hideImageViewAccordingMode(fabAlignmentMode)
+  }
+
+  private fun setFabDrawable(drawable: Drawable) {
+    val fab = findDependentFab()
+    fab?.setImageDrawable(drawable)
+    if (drawable is Animatable) drawable.start()
   }
 
   private fun hideImageViewAccordingMode(fabAlignmentMode: Int) {
@@ -364,6 +376,9 @@ class NiceBar @JvmOverloads constructor(
     animatorIn.duration = ANIMATION_DURATION
     animators.add(animatorOut)
     animators.add(animatorIn)
+
+    val drawable = inView?.drawable
+    if (drawable is Animatable) drawable.start()
   }
 
   private fun maybeAnimateAttachChange(targetAttached: Boolean) {

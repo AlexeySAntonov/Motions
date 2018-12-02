@@ -23,7 +23,7 @@
       app:fabAlignmentMode="center"
       app:fabCradleMargin="8dp"
       app:fabCradleRoundedCornerRadius="8dp"
-      app:leftImageRes="@drawable/ic_menu_white_24dp"
+      app:leftImageRes="@drawable/ic_clock_anim"
       app:rightImageRes="@drawable/ic_motorcycle_white_24dp"/>
 
   <android.support.design.widget.FloatingActionButton
