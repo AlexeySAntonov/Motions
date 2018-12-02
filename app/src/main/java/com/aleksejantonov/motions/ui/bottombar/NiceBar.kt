@@ -204,24 +204,37 @@ class NiceBar @JvmOverloads constructor(
     context.theme.resolveAttribute(R.attr.selectableItemBackgroundBorderless, typedValue, true)
     leftImage?.apply {
       setOnClickListener {
-        maybeAnimateIconVisibilityChange(View.GONE, this)
+        maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_START)
       }
       setBackgroundResource(typedValue.resourceId)
     }
     rightImage?.apply {
       setOnClickListener {
-        maybeAnimateIconVisibilityChange(View.GONE, this)
+        maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_END)
       }
       setBackgroundResource(typedValue.resourceId)
     }
     centerImage?.apply {
       setOnClickListener {
-        maybeAnimateIconVisibilityChange(View.GONE, this)
+        maybeAnimateIconVisibilityChange(this)
         setFabAlignmentMode(FAB_ALIGNMENT_MODE_CENTER)
       }
       setBackgroundResource(typedValue.resourceId)
+    }
+
+    hideImageViewAccordingMode(fabAlignmentMode)
+  }
+
+  private fun hideImageViewAccordingMode(fabAlignmentMode: Int) {
+    leftImage?.alpha = 1f
+    rightImage?.alpha = 1f
+    centerImage?.alpha = 1f
+    when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START  -> leftImage?.alpha = 0f
+      FAB_ALIGNMENT_MODE_END    -> rightImage?.alpha = 0f
+      FAB_ALIGNMENT_MODE_CENTER -> centerImage?.alpha = 0f
     }
   }
 
@@ -245,8 +258,8 @@ class NiceBar @JvmOverloads constructor(
     }
   }
 
-  private fun maybeAnimateIconVisibilityChange(visibility: Int, view: ImageView) {
-    if (view.visibility != visibility && ViewCompat.isLaidOut(view)) {
+  private fun maybeAnimateIconVisibilityChange(view: ImageView) {
+    if (ViewCompat.isLaidOut(view)) {
       visibilityAnimator?.cancel()
 
       val animators = ArrayList<Animator>()
@@ -455,6 +468,7 @@ class NiceBar @JvmOverloads constructor(
       super.onRestoreInstanceState(state.superState)
       fabAlignmentMode = state.fabAlignmentMode
       fabAttached = state.fabAttached
+      hideImageViewAccordingMode(fabAlignmentMode)
     }
   }
 
