@@ -55,6 +55,7 @@ class NiceBar @JvmOverloads constructor(
 
     var LEFT_IMAGE_ID = View.generateViewId()
     var RIGHT_IMAGE_ID = View.generateViewId()
+    var CENTER_IMAGE_ID = View.generateViewId()
   }
 
   private val fabOffsetEndMode: Int
@@ -73,6 +74,7 @@ class NiceBar @JvmOverloads constructor(
 
   private var leftImage: ImageView? = null
   private var rightImage: ImageView? = null
+  private var centerImage: ImageView? = null
 
   private var backgroundTint: ColorStateList?
     get() = materialShapeDrawable.tintList
@@ -143,7 +145,7 @@ class NiceBar @JvmOverloads constructor(
     val barTopRightCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barTopRightRadius, 0).toFloat()
     val barBottomLeftCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barBottomLeftRadius, 0).toFloat()
     val barBottomRightCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_barBottomRightRadius, 0).toFloat()
-    val barIconsSideMargin = a.getDimensionPixelOffset(R.styleable.NiceBar_barIconsSideMargin, 0).toFloat()
+    val barIconsSideMargin = a.getDimensionPixelOffset(R.styleable.NiceBar_barIconsSideMargin, 0)
     val barIconsMode = a.getInt(R.styleable.NiceBar_barIconsMode, 0)
     fabAlignmentMode = a.getInt(R.styleable.NiceBar_fabAlignmentMode, 0)
     hideOnScroll = a.getBoolean(R.styleable.NiceBar_hideOnScroll, false)
@@ -170,7 +172,7 @@ class NiceBar @JvmOverloads constructor(
     if (barIconsMode == BAR_ICONS_MODE_FULL) setupIcons(barIconsSideMargin)
   }
 
-  private fun setupIcons(sideMargin: Float) {
+  private fun setupIcons(sideMargin: Int) {
     val set = ConstraintSet()
     leftImage = ImageView(context).apply {
       id = LEFT_IMAGE_ID
@@ -180,25 +182,47 @@ class NiceBar @JvmOverloads constructor(
       id = RIGHT_IMAGE_ID
       setImageResource(R.drawable.ic_menu_white_24dp)
     }
+    centerImage = ImageView(context).apply {
+      id = CENTER_IMAGE_ID
+      setImageResource(R.drawable.ic_menu_white_24dp)
+    }
     addView(leftImage)
     addView(rightImage)
+    addView(centerImage)
     set.clone(this)
     set.connect(LEFT_IMAGE_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
     set.connect(LEFT_IMAGE_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
-    set.connect(LEFT_IMAGE_ID, ConstraintSet.START, id, ConstraintSet.START, dpToPx(sideMargin))
+    set.connect(LEFT_IMAGE_ID, ConstraintSet.START, id, ConstraintSet.START, sideMargin)
     set.connect(RIGHT_IMAGE_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
     set.connect(RIGHT_IMAGE_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
-    set.connect(RIGHT_IMAGE_ID, ConstraintSet.END, id, ConstraintSet.END, dpToPx(sideMargin))
+    set.connect(RIGHT_IMAGE_ID, ConstraintSet.END, id, ConstraintSet.END, sideMargin)
+    set.connect(CENTER_IMAGE_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(CENTER_IMAGE_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(CENTER_IMAGE_ID, ConstraintSet.START, id, ConstraintSet.START)
+    set.connect(CENTER_IMAGE_ID, ConstraintSet.END, id, ConstraintSet.END)
     set.applyTo(this)
 
     val typedValue = TypedValue()
     context.theme.resolveAttribute(R.attr.selectableItemBackgroundBorderless, typedValue, true)
     leftImage?.apply {
-      setOnClickListener { setFabAlignmentMode(FAB_ALIGNMENT_MODE_START) }
+      setOnClickListener {
+        maybeAnimateIconVisibilityChange(View.GONE, this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_START)
+      }
       setBackgroundResource(typedValue.resourceId)
     }
     rightImage?.apply {
-      setOnClickListener { setFabAlignmentMode(FAB_ALIGNMENT_MODE_END) }
+      setOnClickListener {
+        maybeAnimateIconVisibilityChange(View.GONE, this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_END)
+      }
+      setBackgroundResource(typedValue.resourceId)
+    }
+    centerImage?.apply {
+      setOnClickListener {
+        maybeAnimateIconVisibilityChange(View.GONE, this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_CENTER)
+      }
       setBackgroundResource(typedValue.resourceId)
     }
   }
@@ -227,9 +251,11 @@ class NiceBar @JvmOverloads constructor(
     if (view.visibility != visibility && ViewCompat.isLaidOut(view)) {
       visibilityAnimator?.cancel()
 
-
-
-
+      val animators = ArrayList<Animator>()
+      createImageViewFadeAnimation(animators, view)
+      val set = AnimatorSet()
+      set.playTogether(animators)
+      visibilityAnimator = set
       visibilityAnimator?.addListener(object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
           visibilityAnimator = null
@@ -294,6 +320,20 @@ class NiceBar @JvmOverloads constructor(
     val animator = ObjectAnimator.ofFloat(findDependentFab(), "translationX", getFabTranslationX(targetMode).toFloat())
     animator.duration = ANIMATION_DURATION
     animators.add(animator)
+  }
+
+  private fun createImageViewFadeAnimation(animators: MutableList<Animator>, view: ImageView?) {
+    val inView = when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START -> leftImage
+      FAB_ALIGNMENT_MODE_END   -> rightImage
+      else                     -> centerImage
+    }
+    val animatorOut = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
+    val animatorIn = ObjectAnimator.ofFloat(inView, "alpha", 0f, 1f)
+    animatorOut.duration = ANIMATION_DURATION
+    animatorIn.duration = ANIMATION_DURATION
+    animators.add(animatorOut)
+    animators.add(animatorIn)
   }
 
   private fun maybeAnimateAttachChange(targetAttached: Boolean) {
