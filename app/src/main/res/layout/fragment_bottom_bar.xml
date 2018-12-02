@@ -19,7 +19,7 @@
       app:barIconsSideMargin="60dp"
       app:barTopLeftRadius="8dp"
       app:barTopRightRadius="8dp"
-      app:fabAlignmentMode="start"
+      app:fabAlignmentMode="center"
       app:fabCradleMargin="8dp"
       app:fabCradleRoundedCornerRadius="8dp"/>
 

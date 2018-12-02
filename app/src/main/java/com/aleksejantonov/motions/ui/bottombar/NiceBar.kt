@@ -175,14 +175,17 @@ class NiceBar @JvmOverloads constructor(
     leftImage = ImageView(context).apply {
       id = LEFT_IMAGE_ID
       setImageResource(R.drawable.ic_menu_white_24dp)
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     rightImage = ImageView(context).apply {
       id = RIGHT_IMAGE_ID
       setImageResource(R.drawable.ic_menu_white_24dp)
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     centerImage = ImageView(context).apply {
       id = CENTER_IMAGE_ID
       setImageResource(R.drawable.ic_menu_white_24dp)
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
     }
     addView(leftImage)
     addView(rightImage)
