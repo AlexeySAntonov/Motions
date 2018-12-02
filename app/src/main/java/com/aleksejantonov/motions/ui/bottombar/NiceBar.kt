@@ -58,8 +58,7 @@ class NiceBar @JvmOverloads constructor(
     var CENTER_IMAGE_ID = View.generateViewId()
   }
 
-  private val fabOffsetEndMode: Int
-  private val fabOffsetStartMode: Int
+  private val fabOffset: Int
   private var fabAlignmentMode: Int = FAB_ALIGNMENT_MODE_CENTER
   private var hideOnScroll: Boolean = false
   private var fabAttached: Boolean = false
@@ -150,8 +149,7 @@ class NiceBar @JvmOverloads constructor(
     fabAlignmentMode = a.getInt(R.styleable.NiceBar_fabAlignmentMode, 0)
     hideOnScroll = a.getBoolean(R.styleable.NiceBar_hideOnScroll, false)
     a.recycle()
-    fabOffsetEndMode = resources.getDimensionPixelOffset(R.dimen.niceBar_fabOffsetEndMode)
-    fabOffsetStartMode = resources.getDimensionPixelOffset(R.dimen.niceBar_fabOffsetStartMode)
+    fabOffset = barIconsSideMargin
     topEdgeTreatment = BottomAppBarTopEdgeTreatment(fabCradleMargin, fabCornerRadius, fabVerticalOffset)
     val appBarModel = ShapePathModel()
     appBarModel.topEdge = topEdgeTreatment
@@ -397,10 +395,10 @@ class NiceBar @JvmOverloads constructor(
 
   private fun getFabTranslationX(fabAlignmentMode: Int): Int {
     val isRtl = ViewCompat.getLayoutDirection(this) == 1
-    val translation = (measuredWidth / 2 - fabOffsetEndMode) * (if (isRtl) -1 else 1)
+    val translation = measuredWidth / 2 - fabOffset
     return when (fabAlignmentMode) {
-      FAB_ALIGNMENT_MODE_START -> -translation
-      FAB_ALIGNMENT_MODE_END   -> translation
+      FAB_ALIGNMENT_MODE_START -> -(translation - (leftImage?.let { it.width / 2 } ?: 0)) * (if (isRtl) -1 else 1)
+      FAB_ALIGNMENT_MODE_END   -> (translation - (rightImage?.let { it.width / 2 } ?: 0)) * (if (isRtl) -1 else 1)
       else                     -> 0
     }
   }
