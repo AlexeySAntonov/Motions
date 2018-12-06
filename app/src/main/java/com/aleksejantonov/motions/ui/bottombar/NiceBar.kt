@@ -28,7 +28,6 @@ import android.support.design.shape.ShapePathModel
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.CoordinatorLayout.AttachedBehavior
-import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.AbsSavedState
 import android.support.v4.view.ViewCompat
@@ -36,6 +35,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
+import com.airbnb.lottie.LottieAnimationView
 import com.aleksejantonov.motions.R
 import com.aleksejantonov.motions.util.getColorStateList
 import java.util.ArrayList
@@ -51,15 +51,20 @@ class NiceBar @JvmOverloads constructor(
 
   companion object {
     private const val ANIMATION_DURATION = 300L
+    private const val LOTTIE_ANIMATION_DURATION = 1000L
     const val FAB_ALIGNMENT_MODE_CENTER = 0
     const val FAB_ALIGNMENT_MODE_END = 1
     const val FAB_ALIGNMENT_MODE_START = 2
-    const val BAR_ICONS_MODE_FULL = 0
-    const val BAR_ICONS_MODE_NONE = 1
+    const val BAR_IMAGE_RESOURCES_MODE = 0
+    const val BAR_LOTTIE_MODE = 1
 
     var LEFT_IMAGE_ID = View.generateViewId()
     var RIGHT_IMAGE_ID = View.generateViewId()
     var CENTER_IMAGE_ID = View.generateViewId()
+
+    var LEFT_LOTTIE_VIEW_ID = View.generateViewId()
+    var RIGHT_LOTTIE_VIEW_ID = View.generateViewId()
+    var CENTER_LOTTIE_VIEW_ID = View.generateViewId()
   }
 
   private val fabOffset: Int
@@ -73,6 +78,7 @@ class NiceBar @JvmOverloads constructor(
   private var attachAnimator: Animator? = null
   private var modeAnimator: Animator? = null
   private var visibilityAnimator: Animator? = null
+  private var lottieAnimator: Animator? = null
   private var fabAnimationListener: AnimatorListenerAdapter
 
   private var leftImage: ImageView? = null
@@ -82,6 +88,14 @@ class NiceBar @JvmOverloads constructor(
   private var leftImageRes: Int? = null
   private var rightImageRes: Int? = null
   private var centerImageRes: Int? = null
+
+  private var leftLottieView: LottieAnimationView? = null
+  private var rightLottieView: LottieAnimationView? = null
+  private var centerLottieView: LottieAnimationView? = null
+
+  private var leftImageFile: String? = null
+  private var rightImageFile: String? = null
+  private var centerImageFile: String? = null
 
   private var backgroundTint: ColorStateList?
     get() = materialShapeDrawable.tintList
@@ -147,6 +161,9 @@ class NiceBar @JvmOverloads constructor(
     leftImageRes = a.getResourceId(R.styleable.NiceBar_leftImageRes, 0)
     rightImageRes = a.getResourceId(R.styleable.NiceBar_rightImageRes, 0)
     centerImageRes = a.getResourceId(R.styleable.NiceBar_centerImageRes, 0)
+    if (a.hasValue(R.styleable.NiceBar_leftImageFile)) leftImageFile = a.getString(R.styleable.NiceBar_leftImageFile)
+    if (a.hasValue(R.styleable.NiceBar_rightImageFile)) rightImageFile = a.getString(R.styleable.NiceBar_rightImageFile)
+    if (a.hasValue(R.styleable.NiceBar_centerImageFile)) centerImageFile = a.getString(R.styleable.NiceBar_centerImageFile)
     val fabCradleMargin = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleMargin, 0).toFloat()
     val fabCornerRadius = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleRoundedCornerRadius, 0).toFloat()
     val fabVerticalOffset = a.getDimensionPixelOffset(R.styleable.NiceBar_fabCradleVerticalOffset, 0).toFloat()
@@ -178,7 +195,8 @@ class NiceBar @JvmOverloads constructor(
     materialShapeDrawable.paintStyle = Style.FILL
     DrawableCompat.setTintList(materialShapeDrawable, backgroundTint)
     ViewCompat.setBackground(this, materialShapeDrawable)
-    if (barIconsMode == BAR_ICONS_MODE_FULL) setupIcons(barIconsSideMargin, leftImageRes, rightImageRes, centerImageRes)
+    if (barIconsMode == BAR_IMAGE_RESOURCES_MODE) setupIcons(barIconsSideMargin, leftImageRes, rightImageRes, centerImageRes)
+    else if (barIconsMode == BAR_LOTTIE_MODE) setupLottie(barIconsSideMargin, leftImageFile, rightImageFile, centerImageFile)
   }
 
   private fun setupIcons(sideMargin: Int, @DrawableRes leftImageRes: Int?, @DrawableRes rightImageRes: Int?, @DrawableRes centerImageRes: Int?) {
@@ -244,6 +262,66 @@ class NiceBar @JvmOverloads constructor(
     hideImageViewAccordingMode(fabAlignmentMode)
   }
 
+  private fun setupLottie(sideMargin: Int, leftImageFile: String?, rightImageFile: String?, centerImageFile: String?) {
+    val set = ConstraintSet()
+    leftLottieView = LottieAnimationView(context).apply {
+      id = LEFT_LOTTIE_VIEW_ID
+      leftImageFile?.let { setAnimation(it) }
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
+    }
+    rightLottieView = LottieAnimationView(context).apply {
+      id = RIGHT_LOTTIE_VIEW_ID
+      rightImageFile?.let { setAnimation(it) }
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
+    }
+    centerLottieView = LottieAnimationView(context).apply {
+      id = CENTER_LOTTIE_VIEW_ID
+      centerImageFile?.let { setAnimation(it) }
+      setPadding(dpToPx(8f), dpToPx(8f), dpToPx(8f), dpToPx(8f))
+    }
+    addView(leftLottieView)
+    addView(rightLottieView)
+    addView(centerLottieView)
+    set.clone(this)
+    set.connect(LEFT_LOTTIE_VIEW_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(LEFT_LOTTIE_VIEW_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(LEFT_LOTTIE_VIEW_ID, ConstraintSet.START, id, ConstraintSet.START, sideMargin)
+    set.connect(RIGHT_LOTTIE_VIEW_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(RIGHT_LOTTIE_VIEW_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(RIGHT_LOTTIE_VIEW_ID, ConstraintSet.END, id, ConstraintSet.END, sideMargin)
+    set.connect(CENTER_LOTTIE_VIEW_ID, ConstraintSet.TOP, id, ConstraintSet.TOP)
+    set.connect(CENTER_LOTTIE_VIEW_ID, ConstraintSet.BOTTOM, id, ConstraintSet.BOTTOM)
+    set.connect(CENTER_LOTTIE_VIEW_ID, ConstraintSet.START, id, ConstraintSet.START)
+    set.connect(CENTER_LOTTIE_VIEW_ID, ConstraintSet.END, id, ConstraintSet.END)
+    set.applyTo(this)
+
+    val typedValue = TypedValue()
+    context.theme.resolveAttribute(R.attr.selectableItemBackgroundBorderless, typedValue, true)
+    leftLottieView?.apply {
+      setOnClickListener {
+        maybeAnimateLottieAnimationView(this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_START)
+      }
+      setBackgroundResource(typedValue.resourceId)
+    }
+    rightLottieView?.apply {
+      setOnClickListener {
+        maybeAnimateLottieAnimationView(this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_END)
+      }
+      setBackgroundResource(typedValue.resourceId)
+    }
+    centerLottieView?.apply {
+      setOnClickListener {
+        maybeAnimateLottieAnimationView(this)
+        setFabAlignmentMode(FAB_ALIGNMENT_MODE_CENTER)
+      }
+      setBackgroundResource(typedValue.resourceId)
+    }
+
+    hideLottieViewAccordingMode(fabAlignmentMode)
+  }
+
   private fun setFabDrawable(drawable: Drawable) {
     val fab = findDependentFab()
     fab?.setImageDrawable(drawable)
@@ -261,11 +339,30 @@ class NiceBar @JvmOverloads constructor(
     }
   }
 
+  private fun hideLottieViewAccordingMode(fabAlignmentMode: Int) {
+    leftLottieView?.alpha = 1f
+    rightLottieView?.alpha = 1f
+    centerLottieView?.alpha = 1f
+    when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START  -> leftLottieView?.alpha = 0f
+      FAB_ALIGNMENT_MODE_END    -> rightLottieView?.alpha = 0f
+      FAB_ALIGNMENT_MODE_CENTER -> centerLottieView?.alpha = 0f
+    }
+  }
+
   fun setImageRes(fabAlignmentMode: Int, @DrawableRes imageRes: Int) {
     when (fabAlignmentMode) {
       FAB_ALIGNMENT_MODE_START  -> leftImage?.setImageResource(imageRes)
       FAB_ALIGNMENT_MODE_END    -> rightImage?.setImageResource(imageRes)
       FAB_ALIGNMENT_MODE_CENTER -> centerImage?.setImageResource(imageRes)
+    }
+  }
+
+  fun setAnimation(fabAlignmentMode: Int, file: String) {
+    when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START  -> leftLottieView?.setAnimation(file)
+      FAB_ALIGNMENT_MODE_END    -> rightLottieView?.setAnimation(file)
+      FAB_ALIGNMENT_MODE_CENTER -> centerLottieView?.setAnimation(file)
     }
   }
 
@@ -304,6 +401,24 @@ class NiceBar @JvmOverloads constructor(
         }
       })
       visibilityAnimator?.start()
+    }
+  }
+
+  private fun maybeAnimateLottieAnimationView(view: LottieAnimationView) {
+    if (ViewCompat.isLaidOut(view)) {
+      lottieAnimator?.cancel()
+
+      val animators = ArrayList<Animator>()
+      createLottieViewAnimation(animators, view)
+      val set = AnimatorSet()
+      set.playTogether(animators)
+      lottieAnimator = set
+      lottieAnimator?.addListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator) {
+          lottieAnimator = null
+        }
+      })
+      lottieAnimator?.start()
     }
   }
 
@@ -379,6 +494,30 @@ class NiceBar @JvmOverloads constructor(
 
     val drawable = inView?.drawable
     if (drawable is Animatable) drawable.start()
+  }
+
+  private fun createLottieViewAnimation(animators: MutableList<Animator>, view: LottieAnimationView?) {
+    val inView = when (fabAlignmentMode) {
+      FAB_ALIGNMENT_MODE_START -> leftLottieView
+      FAB_ALIGNMENT_MODE_END   -> rightLottieView
+      else                     -> centerLottieView
+    }
+
+    val animatorLottie = ValueAnimator.ofFloat(0f, 1f).apply {
+      addUpdateListener { inView?.progress = it.animatedValue as Float }
+      duration = LOTTIE_ANIMATION_DURATION
+      animators.add(this)
+    }
+
+    val animatorIn = ObjectAnimator.ofFloat(inView, "alpha", 0f, 1f).apply {
+      duration = ANIMATION_DURATION
+      animators.add(this)
+    }
+
+    val animatorOut = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f).apply {
+      duration = ANIMATION_DURATION
+      animators.add(this)
+    }
   }
 
   private fun maybeAnimateAttachChange(targetAttached: Boolean) {
@@ -503,6 +642,7 @@ class NiceBar @JvmOverloads constructor(
       fabAlignmentMode = state.fabAlignmentMode
       fabAttached = state.fabAttached
       hideImageViewAccordingMode(fabAlignmentMode)
+      hideLottieViewAccordingMode(fabAlignmentMode)
     }
   }
 

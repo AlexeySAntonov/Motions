@@ -5,6 +5,9 @@
     <attr name="leftImageRes"/>
     <attr name="centerImageRes"/>
     <attr name="rightImageRes"/>
+    <attr name="leftImageFile"/>
+    <attr name="centerImageFile"/>
+    <attr name="rightImageFile"/>
     <attr name="fabAlignmentMode">
       <enum name="center" value="0"/>
       <enum name="end" value="1"/>
@@ -21,8 +24,8 @@
     <attr name="barBottomRightRadius" format="dimension"/>
     <attr name="barIconsSideMargin" format="dimension"/>
     <attr name="barIconsMode">
-      <enum name="full" value="0"/>
-      <enum name="none" value="1"/>
+      <enum name="imageResources" value="0"/>
+      <enum name="lottie" value="1"/>
     </attr>
   </declare-styleable>
 </resources>
