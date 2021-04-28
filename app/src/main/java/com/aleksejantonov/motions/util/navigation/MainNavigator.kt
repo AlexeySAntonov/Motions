@@ -2,7 +2,6 @@ package com.aleksejantonov.motions.util.navigation
 
 import android.support.v4.app.Fragment
 import com.aleksejantonov.motions.R
-import com.aleksejantonov.motions.ui.bottombar.BottomBarFragment
 import com.aleksejantonov.motions.ui.eightscene.EightSceneFragment
 import com.aleksejantonov.motions.ui.fifthscene.FifthSceneFragment
 import com.aleksejantonov.motions.ui.firstscene.FirstSceneFragment
@@ -13,11 +12,9 @@ import com.aleksejantonov.motions.ui.ninescene.NineSceneFragment
 import com.aleksejantonov.motions.ui.secondscene.SecondSceneFragment
 import com.aleksejantonov.motions.ui.sevenscene.SevenSceneFragment
 import com.aleksejantonov.motions.ui.sixscene.SixSceneFragment
-import com.aleksejantonov.motions.ui.tenscene.TenSceneFragment
 import com.aleksejantonov.motions.ui.thirdscene.ThirdSceneFragment
 import com.aleksejantonov.motions.util.navigation.MainNavigator.Commands.FORWARD
 import com.aleksejantonov.motions.util.navigation.MainNavigator.Commands.REPLACE
-import com.aleksejantonov.motions.util.navigation.Screens.BOTTOM_BAR
 import com.aleksejantonov.motions.util.navigation.Screens.EIGHT_SCREEN
 import com.aleksejantonov.motions.util.navigation.Screens.FIFTH_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.FIRST_SCENE
@@ -27,7 +24,6 @@ import com.aleksejantonov.motions.util.navigation.Screens.NINE_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SECOND_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SEVEN_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.SIX_SCENE
-import com.aleksejantonov.motions.util.navigation.Screens.TEN_SCENE
 import com.aleksejantonov.motions.util.navigation.Screens.THIRD_SCENE
 
 class MainNavigator(activity: MainActivity) {
@@ -70,8 +66,6 @@ class MainNavigator(activity: MainActivity) {
       SEVEN_SCENE  -> SevenSceneFragment.newInstance()
       EIGHT_SCREEN -> EightSceneFragment.newInstance()
       NINE_SCENE   -> NineSceneFragment.newInstance()
-      TEN_SCENE    -> TenSceneFragment.newInstance()
-      BOTTOM_BAR   -> BottomBarFragment.newInstance()
     }
   }
 
